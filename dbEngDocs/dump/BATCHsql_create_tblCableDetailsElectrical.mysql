@@ -1,0 +1,34 @@
+/*
+This table contains the current carrying capacity of cables based on the current carrying capacity tables defined in AS3008.1.1.
+CableDetails_ID	CableDetails_CIRCUIT_TYPE	CableDetails_CONDUCTOR_TYPE	CableDetails_CORES	CableDetails_INSTALL_TYPE	CableDetails_ACTIVE_SIZE	CableDetails_NEUTRAL_SIZE	CableDetails_EARTH_SIZE	CableDetails_CCC	CableDetails_MVAM	CableDetails_SIZEUNITS	CableDetails_INSULATION	CableDetails_SHEATH	CableDetails_ISSCREENED	CableDetails_VOLTRATING	CableDetails_ISFLEX	CableDetails_ISARMOURED    CableDetails_ROHMSPERKM	CableDetails_XOHMSPERKM	CableDetails_ZOHMSPERKM	CableDetails_REFERENCE_TEMP	CableDetails_MAX_CONDUCTOR_TEMP	CableDetails_MANUFACTURER
+*/
+CREATE TABLE tblCableDetailsElectrical (
+CableDetails_ID INT NOT NULL AUTO_INCREMENT, -- PRIMARY KEY
+CableDetails_CircuitType ENUM('SINGLE','MULTI','CONTROL','INSTRUMENT'), -- single or multi-phase CCC
+CableDetails_ShortDescrip VARCHAR (128), -- short description of the cable type. e.g. 25MM2 1C AL XLPE/PVC X-90 0.6/1kV
+CableDetails_ConductorType ENUM('CU','AL'), -- Conductor material - copper or aluminium
+CableDetails_Cores VARCHAR (8) DEFAULT '-', -- Number of cores associated with the cable.
+CableDetails_InstallType VARCHAR (32), -- CABLE INSTALLATION METHOD
+CableDetails_ActiveSize DECIMAL(8,1) DEFAULT 0, -- active conductor size
+CableDetails_NeutralSize DECIMAL(8,1) DEFAULT 0, -- neutral conductor size
+CableDetails_EarthSize DECIMAL(8,1) DEFAULT 0, -- earth conductor size
+CableDetails_ControlCores VARCHAR(8) DEFAULT '-', -- control core details
+CableDetails_ControlSize DECIMAL(8,1) DEFAULT 0, -- control core sizes
+CableDetails_InstPairs VARCHAR(8) DEFAULT '-', -- instrument pairs
+CableDetails_CCC INT DEFAULT 0, -- the cable's current carrying capacity in amps
+CableDetails_MVAM DECIMAL(6,4), -- the cable's milli-volt per amp-metre value
+CableDetails_SizeUnits VARCHAR(8),-- DEFAULT 'MM2', -- cable size units. References unit_Unit
+CableDetails_Insulation VARCHAR(8), -- cable insulation type
+CableDetails_Sheath VARCHAR(8), -- does the cable have a sheath?
+CableDetails_Screen VARCHAR(8), -- is the cable screened?
+CableDetails_VoltRating VARCHAR(32), -- cable voltage rating
+CableDetails_IsFlex ENUM('TRUE', 'FALSE'), -- is the cable flexible?
+CableDetails_Armoured CHAR(8), -- is the cable armoured? Added to the table 20150614
+CableDetails_ROhmsPerKM DECIMAL(6,4), -- resistance (ohms/km) SHOULD NOT BE IN THIS TABLE.
+CableDetails_XOhmsPerKM DECIMAL(6,4), -- reactance (ohms/km) SHOULD NOT BE IN THIS TABLE.
+CableDetails_ZOhmsPerKM DECIMAL(6,4), -- impedance (ohms/km) SHOULD NOT BE IN THIS TABLE.
+CableDetails_ReferenceTemp INT, -- referance temp based on installation method. Assumes degrees C.
+CableDetails_MaxConductorTemp INT, -- maximum conductor temperature. Assumes degrees C.
+CableDetails_Manufacturer VARCHAR(128), -- cable manufacturer
+PRIMARY KEY (CableDetails_ID)
+)ENGINE=InnoDB;

@@ -1,0 +1,324 @@
+# coding: utf-8
+#
+from mongoengine import *
+#import pymongo
+import datetime
+
+
+# Global Variables
+"""
+Global variables are intended to be accessed from a module wide context. The following isn't going to work in it's current form and will need to be better considered.
+"""
+
+cableType = None
+circuitType = None
+conductorMaterial = None
+defaultConductorMaterial = None
+installMethod = None
+cableArrangement = None
+sheathType = None
+insulationType = None
+voltRating = None
+defaultVoltRating = None
+circuitVoltage = None
+circuitCurrent = None
+conductorSize = None
+defaultConductorSize = None
+minCableSingleCoreSize = None
+sizeUnit = None
+defaultSizeUnit = None
+coreArrangements = None
+cableArmour = None
+defaultCableArmour = None
+CableScreen = None
+defaultCableScreen = None
+CoreScreen = None
+defaultCoreScreen = None
+power = None
+flexCable = None
+defaultFlexCable = None
+defaultDeratingFactor = None
+
+class globalVariables(Document):
+    """
+    This function is meant to initialise global variables associated with this module from config (JSON) files that contain the required information.
+
+    This function is has not yet been thought through completely.
+    """
+    list_cableType = ListField(StringField())
+    list_circuitType = ListField(StringField())
+    list_conductorMaterial = ListField(StringField())
+    default_conductorMaterial = StringField(choices=conductorMaterial)
+    list_installMethod = ListField(StringField())
+    list_cableArrangement = ListField(StringField())
+    list_sheathType = ListField(StringField())
+    list_insulationType = ListField(StringField())
+    list_voltRating = ListField(StringField())
+    default_voltRating = StringField(choices=voltRating)
+    list_circuitVoltage = ListField(IntField())
+    list_circuitCurrent = ListField(StringField())
+    list_conductorSize = ListField(DecimalField(precision=1))
+    default_conductorSize = DecimalField(precision=1)
+    minCableSingleCoreSize = DecimalField(precision=1, choices=conductorSize)
+    list_sizeUnit = ListField(StringField())
+    default_SizeUnit = StringField(choices=sizeUnit)
+    list_coreArrangements = ListField(StringField())
+    list_cableArmour = ListField(StringField())
+    default_cableArmour = StringField(choices=cableArmour)
+    list_cableScreen = ListField(StringField())
+    default_cableScreen = StringField(choices=CableScreen)
+    list_coreScreen = ListField(StringField())
+    default_coreScreen = StringField(choices=CoreScreen)
+    list_power = DictField()
+    list_flexCable = ListField(StringField())
+    default_flexCable = StringField(choices=flexCable)
+    default_deratingFactor = DecimalField(precision=1, min_value=0.001)
+
+    def importVariables(self, jsonObject):
+        """
+        This method is used to map the variables in the .config (JSON) file to the module's common variables
+        :return:
+        """
+
+        ## SHOULD THESE BE ATTRIBUTES OF THE GLOBABLVARIABLE DOCUMENT????
+        ## RATTHER THAT THE ATTEMPT TO MAKE THEM BROADER GLOBAL VARIABLES?
+        global cableType
+        cableType = list_cableType
+        global circuitType
+        circuitType = list_circuitType
+        global conductorMaterial
+        conductorMaterial = list_conductorMaterial
+        global defaultConductorMaterial
+        defaultConductorMaterial = default_conductorMaterial
+        global installMethod
+        installMethod = list_installMethod
+        global cableArrangement
+        cableArrangement = list_cableArrangement
+        global sheathType
+        sheathType = list_sheathType
+        global insulationType
+        insulationType = list_insulationType
+        global voltRating
+        voltRating = list_voltRating
+        global defaultVoltRating
+        defaultVoltRating = default_voltRating
+        global circuitVoltage
+        circuitVoltage = list_circuitVoltage
+        global circuitCurrent
+        circuitCurrent = list_circuitCurrent
+        global conductorSize
+        conductorSize = list_conductorSize
+        global defaultConductorSize
+        defaultConductorSize = default_conductorSize
+        global minCableSingleCoreSize
+        minCableSingleCoreSize
+        global sizeUnit
+        sizeUnit = list_sizeUnit
+        global defaultSizeUnit
+        defaultSizeUnit = default_SizeUnit
+        global coreArrangements
+        coreArrangements = list_coreArrangements
+        global cableArmour
+        cableArmour = list_cableArmour
+        global defaultCableArmour
+        defaultCableArmour = default_cableArmour
+        global CableScreen
+        CableScreen = list_cableScreen
+        global CableScreen
+        CableScreen = default_cableScreen
+        global CoreScreen
+        CoreScreen = list_coreScreen
+        global defaultCoreScreen
+        defaultCoreScreen = default_coreScreen
+        global power
+        power = list_power
+        global flexCable
+        flexCable = list_flexCable
+        global defaultFlexCable
+        defaultFlexCable = default_flexCable
+        global defaultDeratingFactor
+        defaultDeratingFactor = default_deratingFactor
+
+
+
+class CoreDetails(EmbeddedDocument):
+    """
+    :param size:
+    :param sizeUnit:
+    :param number:
+    """
+    size = DecimalField(precision=1, choices=conductorSize, default=defaultConductorSize)
+    sizeUnit = StringField(choices=sizeUnit, default=defaultSizeUnit)
+    number = IntField()
+
+class CableInstallDetails(EmbeddedDocument):
+    """
+    :param name:
+    :param current:
+    :param installTemp:
+    :param cableArrangement:
+    """
+    name = StringField(required=True, choices=installMethod)
+    current = IntField(required=True)
+    installTemp = IntField(required=True)
+    cableArrangement = StringField(choices=cableArrangement) # THIS SHOULD ONLY COME INTO PLAY WHEN THE CABLE IS A SINGLE CORE POWER CABLE.
+
+class CableInsulationDetails(EmbeddedDocument):
+    """
+    :param name:
+    :param conductorTemperature:
+    :param maxTemperature:
+    """
+    name = StringField(required=True, choices=insulationType)
+    conductorTemperature = IntField(required=True) # maximum conductor temperature. Assumes degrees C
+    maxTemperature = IntField(required=True)
+
+class CableScreen(EmbeddedDocument):
+    """
+    :param name:
+    :param faultWithstand:
+    """
+    name = StringField(choices=CableScreen, default=defaultCableScreen)
+    faultWithstand = IntField()
+
+class CoreScreen(EmbeddedDocument):
+    """
+    :param type:
+    """
+    type = StringField(choices=CoreScreen, default=defaultCoreScreen)
+
+class CableImpedance(EmbeddedDocument):
+    """
+    :param MVAM: Milli-volts per amp-metre
+    :param rOhmsPerKM: resistance (ohms/km)
+    :param xOhmsPerKM: reactance (ohms/km)
+    :param zOhmsPerKM: impedance (ohms/km)
+    """
+    MVAM = DecimalField(precision=4)
+    rOhmsPerKM = DecimalField(precision=4)
+    xOhmsPerKM = DecimalField(precision=4)
+    zOhmsPerKM = DecimalField(precision=4)
+
+class ManufacturerDetails(EmbeddedDocument):
+    """
+    :param name:
+    :param partNumber:
+    """
+    name = StringField()
+    partNumber = StringField()
+
+class I2T(EmbeddedDocument):
+    """
+    :param kFactor: this will probably have to calculated from a look up table and will be unique to each run
+    :param time: this will be a list of time values ranging from 0.0001 to 5 secs. It can zipped with I2T.current shown below.
+    :param current: this will be a list of current values that be zipped with I2T.time shown above.
+    """
+    kFactor = IntField(required=True)
+    time = ListField(min_value=0.0001, max_value=5, precision=4)
+    current = ListField(min_value=0)
+
+class RevisionDetail(EmbeddedDocument):
+    """
+    :param number:
+    :param date: date of the most recent change
+    """
+    number = StringField(required=True),
+    date = DateTimeField(default=datetime.datetime.now())
+
+class CircuitDetail(EmbeddedDocument):
+    """
+    :param circuitVoltage: The voltage of the circuit.
+    :param phases: Number of phases the circuit has.
+    :param circuitCurrent: Is the circuit ac or dc
+    :param deratingFactor:
+    """
+    circuitVoltage = IntField(choices=circuitVoltage)
+    phases = IntField(required=True)
+    circuitCurrent = StringField(required=True, choices=circuitCurrent)
+    deratingFactor = FloatField(default=1) # DERATING FACTOR FOR THE CABLE RUN
+
+class Cable(Document):
+    """
+    :param description: e.g. 3C+E 35mm2 Cu PVC/SWA/PVC 0.6/1kV
+    :param cableType: Describes the type of cable e.g. ACTIVE, EARTH, COMMS etc.
+    :param circuitType: Describes the type of circuit the cable is used for "SINGLE", "MULTI", "CONTROL", "INSTRUMENT" etc.
+    :param conductorMaterial: The material the conductor is made from.
+    :param cableCoreArrangement:
+    :param activeCores: Embedded document.
+    :param neutralCores:
+    :param earthCores:
+    :param controlCores:
+    :param instPairs:
+    :param current:
+    :param insulation:
+    :param sheath: Details of the cable sheath
+    :param CableScreen: Details of the cable's screen (if any)
+    :param CoreScreen: Details of the cable core's screen (if any)
+    :param voltRating: Maximum voltage rating fo the cable.
+    :param isFlex: Details of how flexiable the cable is.
+    :param armoured: Details of the cable's armouring.
+    :param impedance:
+    :param manufacturer: Details specific to the manufacture of the cable.
+    """
+    description = StringField() # e.g. 3C+E 35mm2 Cu PVC/SWA/PVC 0.6/1kV
+    cableType = ListField(required=True, choices=cableType) # this is a list to allow multiple cable types to be assigned to the cable
+    circuitType = StringField(choices=circuitType)
+    conductorMaterial = StringField(choices=conductorMaterial, default=defaultConductorMaterial)
+    cableCoreArrangement = StringField(required=True, choices=coreArrangements)
+    activeCores = EmbeddedDocumentField(CoreDetails)
+    neutralCores = EmbeddedDocumentField(CoreDetails)
+    earthCores = EmbeddedDocumentField(CoreDetails)
+    controlCores = EmbeddedDocumentField(CoreDetails)
+    instPairs = EmbeddedDocumentField(CoreDetails)
+    current = EmbeddedDocumentListField(CableInstallDetails)
+    insulation = EmbeddedDocumentField(CableInsulationDetails)
+    sheath = StringField(required=True, choices=sheathType)
+    CableScreen = EmbeddedDocumentField(CableScreen)
+    CoreScreen = EmbeddedDocumentField(CoreScreen)
+    voltRating = StringField(required=True, choices=voltRating, default=defaultVoltRating)
+    isFlex = StringField(required=True, choices=flexCable, default=defaultFlexCable)
+    armoured = StringField(required=True, choices=cableArmour, default=defaultCableArmour)
+    impedance = EmbeddedDocumentField(CableImpedance, required=True)
+    manufacturer = EmbeddedDocumentField(ManufacturerDetails)
+
+
+class CableRun(Document):
+    """
+    :param tag: TAGS COULD BE A LIST OF TAGS THAT EQUAL IN NUMBER TO THE NUMBER OF CABLES THAT FORM PART OF THE RUN. THIS WOULD ALLEVIATE THE NEED TO SPECIFY EACH CABLES TAG AND ITS ASSOCIATED CABLE TYPE.
+    :param cable:
+    :param cableType: THE SPECIFIC CABLES THAT MAKE UP THE RUN ARE REFERENCED WITHIN THE LIST. THE LIST WILL NEED TO ALLOW FOR MORE THAN ONE OF A PARTICULAR cable_id TO BE CONTAINED WITHIN IT. THIS WILL ASSIST WITH THE CONSTRUCTION OF MTOS
+    :param circuitType:
+    :param circuitLength:
+    :param numberCables:
+    :param CircuitDetail:
+    :param currentCapacity:
+    :param installMethod:
+    :param loadedTemp:
+    :param supply:
+    :param load:
+    """
+    tag = ListField(required=True)
+    cables = ListField(ReferenceField(Cable), required=True)
+    cableType = StringField(required=True, choices=cableType)
+    circuitType = StringField(choices=circuitType)
+    circuitLength = IntField(required=True, default=0)
+    numberCables = IntField(required=True)
+    # number of cables that make up the run. THIS SHOULD BE LINKED TO cables AS DEFINED ABOVE.
+    CircuitDetail = EmbeddedDocument(CircuitDetail)
+    currentCapacity = IntField(required=True) # THIS IS THE CABLE RUNS CABLE CARRYING CAPACITY BASED ON THE INSTALLATION METHOD, NUMBER OF PARALLEL CABLES AND THE DERATING FACTOR
+    installMethod = StringField(required=True, choices=installMethod) # THIS IS USED TO DETERMINE THE CCC OF THE CABLES IN THE CABLE RUN
+    loadedTemp = IntField() # temperature OF THE CABLE RUN BASED ON ACTUAL LOAD AND CABLE SIZE
+    supply = StringField(required=True) # THIS SHOULD BE A REFERENCE FIELD EVENTUALLY
+    #_id of supplying equipment
+    load = StringField(required=True)  # THIS SHOULD BE A REFERENCE FIELD EVENTUALLY
+    # _id of load equipment
+    supplyContract = StringField() # THIS SHOULD BE A REFERENCE FIELD EVENTUALLY
+    installContract = StringField() # THIS SHOULD BE A REFERENCE FIELD EVENTUALLY
+    connectContract = StringField() # THIS SHOULD BE A REFERENCE FIELD EVENTUALLY
+    area = StringField() # THIS SHOULD BE A REFERENCE FIELD EVENTUALLY
+    MVAM = DecimalField(precision=4)
+    R = DecimalField(precision=4) # resistance (ohms)
+    X = DecimalField(precision=4) # reactance (ohms)
+    Z = DecimalField(precision=4) # impedance (ohms
+    I2T = EmbeddedDocumentField(I2T)
+    revision = EmbeddedDocumentField(RevisionDetail)

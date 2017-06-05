@@ -1,0 +1,11 @@
+/* Misc. MongoEngine Classes */
+
+class CoreDetails(EmbeddedDocument):
+    "size": DecimalField(precision=1, choices=<MAPS TO conductorSize IN VARIABLES.CONFIG>)
+    "sizeUnits": StringField(default=<MPAS TO defaultSizeUnit IN VARIABLES.CONFIG, choices=<MAPS TO sizeUnits IN VARIABLES.CONFIG>)
+    "number": IntField()
+
+class CableInstallDetails(EmbeddedDocument):
+    "name": StringField(required=True)
+    "current": IntField(required=True)
+    "installTemp": IntField(required=True)
