@@ -1,0 +1,4 @@
+**/.idea/**
+dump/**
+**/__pycache__/
+.xml

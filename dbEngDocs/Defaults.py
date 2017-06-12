@@ -6,10 +6,17 @@ import datetime
 
 
 # Is this actually required? If may be easier to allow this to be managed by the existing .py file.
-"""
-This module defines the documents that will contain the databases default values. The values stored within 
-cableVariables.py will be transferred to the database. 
-"""
+'''
+This module defines the documents that will contain the databases default
+values. The values stored within cableVariables.py will be transferred to the
+database.
+
+DESCRIPTION
+===========
+
+Stores the dbEngDocs defaults to a dedicated collection for reference and common
+access by other collections.
+'''
 
 
 class CircuitDefault(EmbeddedDocument):
@@ -218,6 +225,3 @@ class DBDefaults(Document):
         CircuitDefault,
         required=True
     )
-
-
-
